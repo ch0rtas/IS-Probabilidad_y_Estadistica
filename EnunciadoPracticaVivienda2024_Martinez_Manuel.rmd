@@ -1,0 +1,308 @@
+---
+title: "Práctica 1: Programación en R"
+author: "Probabilidad y Estadística - Manuel Martínez Ramón"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introducción
+
+El objetivo de esta práctica es realizar un estudio muy superficial de modelos de regresión simple. Para ello, necesitaremos un conjunto de datos (*dataset*) sobre el que hacer el estudio. En la primera parte de la práctica, cargaremos dicho *dataset* y realizaremos una exploración estadística de ellos. En la segunda parte, realizaremos un estudio de regresión más específico. 
+
+## Información del *dataset*
+
+El dataset elegido es "*Boston Housing*". Consiste en un *dataset* público con información de viviendas en Boston. En concreto, el *dataset* contine las siguientes columnas:
+
+* **CRIM**: Per capita crime rate by town
+* **ZN**: Proportion of residential land zoned for lots over 25,000 sq. ft
+* **INDUS**: Proportion of non-retail business acres per town
+* **CHAS**: Charles River dummy variable (= 1 if tract bounds river; 0 otherwise)
+* **NOX**: Nitric oxide concentration (parts per 10 million)
+* **RM**: Average number of rooms per dwelling
+* **AGE**: Proportion of owner-occupied units built prior to 1940
+* **DIS**: Weighted distances to five Boston employment centers
+* **RAD**: Index of accessibility to radial highways
+* **TAX**: Full-value property tax rate per $10,000
+* **PTRATIO**: Pupil-teacher ratio by town
+* **B**: 1000(Bk - 0.63)?, where Bk is the proportion of [people of African American descent] by town
+* **LSTAT**: Percentage of lower status of the population
+* **MEDV**: Median value of owner-occupied homes in $1000s```
+
+El *dataset* lo cargaremos en R mediante la instalación de un paquete y su posterior importación:
+```{r pressure, eval=TRUE}
+require("mlbench")
+library(mlbench)
+```
+
+Ya cargado en R, procedemos a guardar el *dataset* en la variable $\tt housing$ para que realicéis el resto de la práctica sobre ella:
+```{r, eval=TRUE}
+data("BostonHousing")
+housing <- BostonHousing
+```
+
+## Información de la práctica.
+* La práctica se calificará sobre 10 puntos.
+* La práctica se resuelve sobre este mismo código.
+* Antes de entregarlo, habrá que cambiar el nombre del fichero, sustituyendo *nombre1* y *apellido1* por los propios del alumno.
+* Si el alumno considera relevante la instalación de alguna librería extra que pueda mostrar mejores resultados o gráficos, es libre para hacerlo. Puntuará más si se realiza un trabajo óptimo en esta parte.
+* Sobre todo en la parte final (regresión), puntuará más aquellos comentarios del alumno que muestren haber investigado el significado de todos los análisis realizados.
+* Si el alumno se encuentra con errores durante la ejecución del código, tiene que aprender a lidiar con ellos como futuro ingeniero informático.
+* Es recomendable consultar los diferentes comandos, así como nuevos comendos y librerías, através de google, el cual os llevará a paginas web adecuadas de programación en R.
+
+## 1) Análisis exploratorio inicial: 
+Se pide utilizar los comandos $\tt str, head, dim, summary$ sobre $\tt housing$ para explorar distribución inicial de los datos en el *dataset*.
+
+```{r, eval=TRUE}
+# Estructura del dataset
+str(housing)
+
+# Primeras filas del dataset
+head(housing)
+
+# Dimensiones del dataset
+dim(housing)
+
+# Resumen estadístico
+summary(housing)
+```
+
+Comentarios del alumno (máximo 100 palabras): 
+```{r, eval=TRUE}
+# El comando 'str(housing)' muestra la estructura del dataset, indicando el tipo de cada
+# variable y las primeras observaciones. 'head(housing)' permite visualizar las primeras seis
+# filas para obtener una vista rápida de los datos. 'dim(housing)' proporciona las dimensiones
+# del dataset, es decir, el número de filas y columnas. 'summary(housing)' ofrece un resumen
+# estadístico de las variables numéricas, como el mínimo, máximo, media, mediana y cuartiles,
+# lo que permite una primera aproximación a la distribución de los datos y a posibles valores
+# atípicos o sesgos.
+```
+
+## 2) Análisis exploratorio de la variable objetivo:
+En esta práctica, trataremos de predecir el valor del precio medio de la vivienda MEDV. Para ello, primero exploraremos la distribución de sus datos. Se pide dibujar un histograma, calcular asimetría y apuntamiento de MEDV. Se pide dibujar un boxplot, calcular los cuartiles y los percentiles 10-90 sobre MEDV. Se pide describir los elementos más importantes de ambas gráficas.
+
+```{r, eval=TRUE}
+# Cargar el paquete necesario para los análisis
+library(mlbench)
+
+# Cargar el dataset
+data("BostonHousing")
+housing <- BostonHousing
+
+# Histograma de la variable MEDV
+hist(housing$medv, main="Histograma de MEDV", xlab="Valor medio de la vivienda ($1000)", col="lightblue", border="black")
+
+# Calcular asimetría y apuntamiento
+if (!require("e1071")) install.packages("e1071", repos="http://cran.us.r-project.org")
+library(e1071)
+asimetria <- skewness(housing$medv)
+apuntamiento <- kurtosis(housing$medv)
+cat("Asimetría:", asimetria, "\n")
+cat("Apuntamiento:", apuntamiento, "\n")
+
+# Boxplot de MEDV
+boxplot(housing$medv, main="Boxplot de MEDV", ylab="Valor medio de la vivienda ($1000)", col="lightgreen", border="black")
+
+# Calcular los cuartiles y percentiles 10-90
+cuartiles <- quantile(housing$medv)
+percentiles_10_90 <- quantile(housing$medv, probs=c(0.10, 0.90))
+
+# Formatear y mostrar los cuartiles de forma clara
+cat("Cuartiles de MEDV:\n")
+print(format(cuartiles, nsmall = 2, justify = "right"), quote = FALSE)
+
+# Formatear y mostrar los percentiles 10-90 de forma clara
+cat("Percentiles 10-90 de MEDV:\n")
+print(format(percentiles_10_90, nsmall = 2, justify = "right"), quote = FALSE)
+```
+
+Comentarios del alumno (máximo 100 palabras): 
+```{r, eval=TRUE}
+# Para generar el PDF desde el archivo .Rmd fue necesario configurar un mirror de CRAN,
+# ya que sin esa línea solo se ejecutaba correctamente en RStudio.
+
+# El código realiza un análisis exploratorio de 'medv' (valor medio de viviendas),
+# con un histograma para su distribución, asimetría y apuntamiento para evaluar forma,
+# un boxplot para dispersión y cuartiles, y los percentiles 10-90 para ver los rangos.
+```
+
+## 3) Correlación entre variables: 
+Lo primerio es que hay que tener en cuenta solo las variables cuantitativas. Se recomienda calcular la matriz de correlaciones de las variables cuantitativas con el comando $\tt cor$.Además se pide utilizar el comando $\tt corrplot$ de la libreria $\tt corrplot$, y la librería $\tt RColorBrewer$ (que posiblemente tengais que instalar) para mostrar graficamente las correlaciones entre todas las variables cuantitativas. Se pide describir los elementos de la gráfica que aportan mayor información.
+
+```{r, eval=TRUE}
+# Instalar los paquetes si no están instalados
+install.packages("corrplot")
+install.packages("RColorBrewer")
+
+# Cargar las librerías necesarias
+library(corrplot)
+library(RColorBrewer)
+
+# Filtrar solo las variables cuantitativas
+cuantitativas <- housing[, sapply(housing, is.numeric)]
+
+# Calcular la matriz de correlación
+correlation_matrix <- cor(cuantitativas)
+
+# Mostrar la matriz de correlación de forma visual
+corrplot(correlation_matrix, method="color", col=brewer.pal(n=9, name="Blues"), 
+         type="upper", order="hclust", addCoef.col="white", 
+         tl.col="black", tl.srt=45, title="Matriz de Correlación")
+```
+
+Comentarios del alumno (máximo 100 palabras): 
+```{r, eval=TRUE}
+# Este código calcula y visualiza la matriz de correlación de las variables
+# cuantitativas del dataset "BostonHousing". Se seleccionan las variables numéricas
+# y se calcula su correlación. La visualización usa 'corrplot' con la paleta
+# "Blues", donde los colores más oscuros indican correlaciones más fuertes.
+# Los coeficientes numéricos dentro de las celdas muestran el grado exacto de
+# la correlación entre las variables. El gráfico facilita la identificación de
+# dependencias entre variables, lo cual puede ser relevante para la construcción
+# de modelos predictivos.
+```
+
+## 4) Regresiones lineales simples:
+Se pide Regresiones lineales simples:Se pide escoger cuatro variables independientes (a vuestro juicio, las mejores) 
+y realizar cuatro regresiones simples con cada una de ellas sobre la variable dependiente MEDV. Se pide dibujar los *scatterplots* de cada variable independiente con MEDV y la recta de regresión resultante sobre cada *scatterplot*, para ello habrá que instalar la libreria $\tt ggplot2$. Describir brevemente el resultado de este análisis.
+
+```{r, eval=TRUE}
+# Instalar y cargar la librería ggplot2 si no está instalada
+install.packages("ggplot2")
+library(ggplot2)
+
+# Seleccionar las variables independientes
+variables_independientes <- c("rm", "crim", "nox", "age")
+
+# Crear un gráfico de cada variable independiente contra MEDV con la recta de regresión
+
+# 1. Regresión entre 'rm' y 'medv'
+ggplot(housing, aes(x=rm, y=medv)) +
+  geom_point(color="blue") +  # Scatterplot
+  geom_smooth(method="lm", color="red") +  # Recta de regresión
+  labs(title="Regresión entre RM y MEDV", x="Número promedio de habitaciones", y="Valor medio de la vivienda") +
+  theme_minimal()
+
+# 2. Regresión entre 'crim' y 'medv'
+ggplot(housing, aes(x=crim, y=medv)) +
+  geom_point(color="blue") +
+  geom_smooth(method="lm", color="red") +
+  labs(title="Regresión entre CRIM y MEDV", x="Tasa de criminalidad", y="Valor medio de la vivienda") +
+  theme_minimal()
+
+# 3. Regresión entre 'nox' y 'medv'
+ggplot(housing, aes(x=nox, y=medv)) +
+  geom_point(color="blue") +
+  geom_smooth(method="lm", color="red") +
+  labs(title="Regresión entre NOX y MEDV", x="Concentración de NOX", y="Valor medio de la vivienda") +
+  theme_minimal()
+
+# 4. Regresión entre 'age' y 'medv'
+ggplot(housing, aes(x=age, y=medv)) +
+  geom_point(color="blue") +
+  geom_smooth(method="lm", color="red") +
+  labs(title="Regresión entre AGE y MEDV", x="Proporción de viviendas antiguas", y="Valor medio de la vivienda") +
+  theme_minimal()
+```
+
+Comentarios del alumno (máximo 100 palabras): 
+```{r, eval=TRUE}
+# Este código genera gráficos de regresión lineales simples entre la variable dependiente 'medv' 
+# (valor medio de la vivienda) y cuatro variables independientes: 'rm' (promedio de habitaciones), 
+# 'crim' (tasa de criminalidad), 'nox' (concentración de NOX) y 'age' (proporción de viviendas 
+# antiguas). Se espera que 'rm' tenga una correlación positiva con 'medv', mientras que 'crim', 
+# 'nox' y 'age' suelen estar negativamente correlacionados con el valor de las viviendas. 
+# Cada gráfico incluye un scatterplot y una recta de regresión, lo que permite visualizar 
+# la relación entre las variables y ayudar en el análisis de las tendencias.
+```
+
+## 5) Análisis de los residuos:
+Se pide mostrar en un *scatterplot* los residuos $e_i$ (eje-x) y la predicción que hace la recta de regresión de la variable independiente LSTAT respecto a la variable MEDV con cada punto $\hat{y}_i$ (eje-y), también llamada variable ajustada. Se pide realizar un histograma de los residuos exclusivamente. Se pide investigar el significado y la importancia de este gráfico y comentarlo brevemente.
+
+```{r, eval=TRUE}
+# Instalar y cargar ggplot2 si no está disponible
+if (!require("ggplot2")) install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+library(ggplot2)
+
+# Realizar la regresión lineal entre LSTAT y MEDV
+modelo <- lm(medv ~ lstat, data = housing)
+
+# Calcular los residuos e_i y los valores ajustados (predicciones)
+residuos <- residuals(modelo)
+valores_ajustados <- fitted(modelo)
+
+# Crear un data frame para ggplot con los residuos y los valores ajustados
+data_residuos <- data.frame(residuos = residuos, valores_ajustados = valores_ajustados)
+
+# 1. Scatterplot de los residuos vs. valores ajustados
+ggplot(data = data_residuos, aes(x = residuos, y = valores_ajustados)) +
+  geom_point(color = "blue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuos vs Valores Ajustados", x = "Residuos (e_i)", y = "Valores Ajustados (ŷ_i)") +
+  theme_minimal()
+
+# 2. Histograma de los residuos
+ggplot(data = data_residuos, aes(x = residuos)) +
+  geom_histogram(binwidth = 1, fill = "lightblue", color = "black") +
+  labs(title = "Histograma de los Residuos", x = "Residuos (e_i)", y = "Frecuencia") +
+  theme_minimal()
+```
+
+Comentarios del alumno (máximo 100 palabras): 
+```{r, eval=TRUE}
+# Este código realiza un análisis de los residuos del modelo de regresión lineal entre 
+# 'LSTAT' (porcentaje de población de bajo estatus) y 'MEDV' (valor medio de la vivienda). 
+# Se calculan los residuos (diferencia entre valores observados y predichos) y los valores 
+# ajustados del modelo. Luego, se crean dos gráficos:
+# - Un scatterplot de los residuos frente a los valores ajustados para identificar patrones 
+#   en los residuos que podrían indicar problemas de ajuste.
+# - Un histograma de los residuos para verificar su distribución y confirmar si se asemeja 
+#   a una distribución normal, como se requiere en la regresión lineal.
+```
+
+## 6) Regresión lineal múltiple:
+Se pide realizar una regresión lineal múltiple con las dos variables independientes a la vez sobre la variable MEDV. Se pide, además, realizar un análisis de los residuos, similar al realizado en el apartado anterior.
+
+```{r, eval=TRUE}
+# Realizar la regresión lineal múltiple entre MEDV y las variables independientes LSTAT y RM
+modelo_multiple <- lm(medv ~ lstat + rm, data = housing)
+
+# Calcular los residuos y los valores ajustados
+residuos_multiple <- residuals(modelo_multiple)
+valores_ajustados_multiple <- fitted(modelo_multiple)
+
+# Crear un data frame para ggplot con los residuos y los valores ajustados
+data_residuos_multiple <- data.frame(residuos = residuos_multiple, valores_ajustados = valores_ajustados_multiple)
+
+# Scatterplot de los residuos vs valores ajustados
+library(ggplot2)
+ggplot(data = data_residuos_multiple, aes(x = residuos, y = valores_ajustados)) +
+  geom_point(color = "blue") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuos vs Valores Ajustados (Modelo Múltiple)", x = "Residuos (e_i)", y = "Valores Ajustados (ŷ_i)") +
+  theme_minimal()
+
+# Histograma de los residuos
+ggplot(data = data_residuos_multiple, aes(x = residuos)) +
+  geom_histogram(binwidth = 1, fill = "lightblue", color = "black") +
+  labs(title = "Histograma de los Residuos (Modelo Múltiple)", x = "Residuos (e_i)", y = "Frecuencia") +
+  theme_minimal()
+```
+
+Comentarios del alumno (máximo 150 palabras): 
+```{r, eval=TRUE}
+# Realizo una regresión lineal múltiple entre 'MEDV' (valor medio de la vivienda) y dos 
+# variables independientes: 'LSTAT' (porcentaje de población de bajo estatus) y 'RM' 
+# (promedio de habitaciones por vivienda). Se espera que un mayor número de habitaciones 
+# (RM) esté relacionado con precios más altos, mientras que un mayor porcentaje de población 
+# de bajo estatus (LSTAT) se asocie con precios más bajos. Luego, se calculan los residuos 
+# del modelo (diferencia entre valores observados y predichos) y se crean dos gráficos para 
+# evaluar el ajuste del modelo: un scatterplot de los residuos frente a los valores ajustados 
+# para verificar la aleatoriedad de los residuos. Un histograma para comprobar si los residuos 
+# siguen una distribución normal, un supuesto clave en la regresión lineal.
+```
+
+
