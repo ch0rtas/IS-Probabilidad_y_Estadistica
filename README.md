@@ -18,7 +18,7 @@ Consulta los README dentro de las carpetas correspondientes para más detalles s
 Clona este repositorio en tu equipo:
 
 ```bash
-git clone https://github.com/ch0rtas/IS-Probabilidad_y_Estadistica.git
+git clone https://github.com/ch0rtas/SWE-Probabilidad_y_Estadistica.git
 ```
 Explora las carpetas para acceder a los diferentes proyectos y sigue las instrucciones específicas dentro de cada uno para su implementación.
 
